@@ -77,7 +77,7 @@ const gameController = (() => {
         }
     };
 
-    function switchCurrentPlayer() {
+    const switchCurrentPlayer = () => {
         if(currentPlayer === playerOne) {
             currentPlayer = playerTwo;
         } else {
@@ -116,7 +116,7 @@ const gameController = (() => {
         console.log(`It is ${getCurrentPlayerName()}'s turn.`);
     }
 
-    function checkWinCondition() {
+    const checkWinCondition = () => {
         const grid = gameBoard.getGrid();
 
         for(let i = 0; i < 3; i++) {
@@ -158,7 +158,7 @@ const gameController = (() => {
         }
     }
 
-    function checkTieCondition() {
+    const checkTieCondition = () => {
         return !containsEmptyCell(gameBoard.getGrid());
 
         function containsEmptyCell(array) {
