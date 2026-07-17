@@ -18,7 +18,7 @@ function createPlayer(displayName, token) {
     return {getName, setName, getToken};
 }
 
-const gameController = (() => {
+function createGameController() {
     const gameBoard = (() => {
         const grid = [
             [GameBoardCellStatus.Empty, GameBoardCellStatus.Empty, GameBoardCellStatus.Empty],
@@ -37,23 +37,6 @@ const gameController = (() => {
 
         const getGrid = () => grid;
 
-        const printGrid = () => {
-            let message = "";
-            for(let y = 0; y < 3; y++) {
-                for(let x = 0; x < 3; x++) {
-                    message += ` ${grid[y][x]} `;
-
-                    if(x === 2) {
-                        message += "\n";
-                    } else {
-                        message += "\t";
-                    }
-                }
-            }
-
-            console.log(message);
-        };
-
         const resetBoard = () => {
             for(let y = 0; y < 3; y++) {
                 for(let x = 0; x < 3; x++) {
@@ -62,7 +45,7 @@ const gameController = (() => {
             }
         }
 
-        return { setCell, getGrid, printGrid, resetBoard };
+        return { setCell, getGrid, resetBoard };
     })();
 
     const playerOne = createPlayer("PlayerOne", GameBoardCellStatus.PlayerOne);
@@ -89,7 +72,6 @@ const gameController = (() => {
 
     const restartGame = () => {
         gameBoard.resetBoard();
-        gameBoard.printGrid();
         console.log(`It is ${getCurrentPlayerName()}'s turn.`);
     }
 
@@ -172,7 +154,48 @@ const gameController = (() => {
         }
     }
 
-    return { updatePlayerName, getCurrentPlayerName, restartGame, playTurn };
+    const getGrid = () => gameBoard.getGrid();
+
+    return { updatePlayerName, getCurrentPlayerName, restartGame, playTurn, getGrid };
+}
+
+const screenController = (() => {
+    const game = createGameController();
+    const turnIndicatorDiv = document.querySelector("#turn-indicator");
+    const gameBoardDiv = document.querySelector("#game-board");
+    
+    gameBoardDiv.addEventListener("click", onGameBoardButtonClicked);
+    
+    const updateScreen = () => {
+        gameBoardDiv.textContent = "";
+        
+        const grid = game.getGrid();
+        
+        for(let y = 0; y < 3; y++) {
+            for(let x = 0; x < 3; x++) {
+                const cellButton = document.createElement("button");
+                cellButton.classList.add("cell");
+                cellButton.dataset.x = x;
+                cellButton.dataset.y = y;
+                cellButton.textContent = grid[y][x];
+                gameBoardDiv.appendChild(cellButton);
+            }
+        }
+
+        turnIndicatorDiv.textContent = `${game.getCurrentPlayerName()}'s turn...`;
+    }
+    
+    function onGameBoardButtonClicked(clickEvent) {
+        if(!clickEvent.target.classList.contains("cell")) {
+            return;
+        }
+        
+        game.playTurn(clickEvent.target.dataset.x, clickEvent.target.dataset.y);
+        updateScreen();
+    }
+    
+    game.restartGame();
+    return { updateScreen }
 })();
 
-gameController.restartGame();
+screenController.updateScreen();

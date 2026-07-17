@@ -5,3 +5,14 @@
     margin: 0;
     box-sizing: border-box;
 }
+
+#game-board {
+    display: grid;
+    height: 40vh;
+    width: 40vh;
+    border: 2px solid black;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    gap: 2.5%;
+    padding: 10px;
+    margin: 0 auto;
+}
