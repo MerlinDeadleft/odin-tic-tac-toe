@@ -4,6 +4,12 @@ const GameBoardCellStatus = {
     PlayerTwo: "O"
 }
 
+const GameState = {
+    Playing: "Playing",
+    Win: "Win",
+    Tied: "Tied"
+}
+
 function createPlayer(displayName, token) {
     let name = displayName;
 
@@ -51,6 +57,7 @@ function createGameController() {
     const playerOne = createPlayer("PlayerOne", GameBoardCellStatus.PlayerOne);
     const playerTwo = createPlayer("PlayerTwo", GameBoardCellStatus.PlayerTwo);
     let currentPlayer = playerOne;
+    let gameState = GameState.Playing;
 
     const updatePlayerName = (playerNumber, newName) => {
         if(playerNumber === 1) {
@@ -72,7 +79,7 @@ function createGameController() {
 
     const restartGame = () => {
         gameBoard.resetBoard();
-        console.log(`It is ${getCurrentPlayerName()}'s turn.`);
+        gameState = GameState.Playing;
     }
 
     const playTurn = (x, y) => {
@@ -82,20 +89,18 @@ function createGameController() {
         }
 
         if(checkWinCondition()) {
-            gameBoard.printGrid();
             console.log(`${getCurrentPlayerName()} has won the game!`);
+            gameState = GameState.Win;
             return;
         }
 
         if(checkTieCondition()) {
-            gameBoard.printGrid();
             console.log("No more empty cells! The game ends in a tie!");
+            gameState = GameState.Tied;
             return;
         }
 
         switchCurrentPlayer();
-        gameBoard.printGrid();
-        console.log(`It is ${getCurrentPlayerName()}'s turn.`);
     }
 
     const checkWinCondition = () => {
@@ -155,8 +160,9 @@ function createGameController() {
     }
 
     const getGrid = () => gameBoard.getGrid();
+    const getGameState = () => gameState;
 
-    return { updatePlayerName, getCurrentPlayerName, restartGame, playTurn, getGrid };
+    return { updatePlayerName, getCurrentPlayerName, restartGame, playTurn, getGrid, getGameState };
 }
 
 const screenController = (() => {
@@ -182,15 +188,28 @@ const screenController = (() => {
             }
         }
 
-        turnIndicatorDiv.textContent = `${game.getCurrentPlayerName()}'s turn...`;
+        switch(game.getGameState()) {
+            case GameState.Playing:
+                turnIndicatorDiv.textContent = `${game.getCurrentPlayerName()}'s turn...`;
+                break;
+            case GameState.Win:
+                turnIndicatorDiv.textContent = `${game.getCurrentPlayerName()} has won the game!`;
+                break;
+            case GameState.Tied:
+                turnIndicatorDiv.textContent = "Game ended in a Tie!"
+                break;
+            default:
+                turnIndicatorDiv.textContent = "ERROR: Unknown Game State!"
+                break;
+        }
     }
     
     function onGameBoardButtonClicked(clickEvent) {
-        if(!clickEvent.target.classList.contains("cell")) {
+        if(!clickEvent.target.classList.contains("cell") || game.getGameState() !== GameState.Playing) {
             return;
         }
         
-        game.playTurn(clickEvent.target.dataset.x, clickEvent.target.dataset.y);
+        const turnResult = game.playTurn(clickEvent.target.dataset.x, clickEvent.target.dataset.y);
         updateScreen();
     }
     
