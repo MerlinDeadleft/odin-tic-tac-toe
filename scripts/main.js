@@ -169,8 +169,11 @@ const screenController = (() => {
     const game = createGameController();
     const turnIndicatorDiv = document.querySelector("#turn-indicator");
     const gameBoardDiv = document.querySelector("#game-board");
+    const restartButtonContainer = document.querySelector("#restart-button-container");
+    const restartButton = document.querySelector("#restart-button");
     
     gameBoardDiv.addEventListener("click", onGameBoardButtonClicked);
+    restartButton.addEventListener("click", onRestartButtonClicked);
     
     const updateScreen = () => {
         gameBoardDiv.textContent = "";
@@ -183,12 +186,14 @@ const screenController = (() => {
                 cellButton.classList.add("cell");
                 cellButton.dataset.x = x;
                 cellButton.dataset.y = y;
-                cellButton.textContent = grid[y][x];
+                cellButton.textContent = grid[y][x] === GameBoardCellStatus.Empty ? "" : grid[y][x];
                 gameBoardDiv.appendChild(cellButton);
             }
         }
 
-        switch(game.getGameState()) {
+        const gameState = game.getGameState();
+
+        switch(gameState) {
             case GameState.Playing:
                 turnIndicatorDiv.textContent = `${game.getCurrentPlayerName()}'s turn...`;
                 break;
@@ -202,6 +207,16 @@ const screenController = (() => {
                 turnIndicatorDiv.textContent = "ERROR: Unknown Game State!"
                 break;
         }
+
+        if(gameState === GameState.Playing) {
+            if(!restartButtonContainer.classList.contains("hidden")) {
+                restartButtonContainer.classList.add("hidden");
+            }
+        } else {
+            if(restartButtonContainer.classList.contains("hidden")) {
+                restartButtonContainer.classList.remove("hidden");
+            }
+        }
     }
     
     function onGameBoardButtonClicked(clickEvent) {
@@ -212,9 +227,13 @@ const screenController = (() => {
         const turnResult = game.playTurn(clickEvent.target.dataset.x, clickEvent.target.dataset.y);
         updateScreen();
     }
+
+    function onRestartButtonClicked() {
+        game.restartGame();
+        updateScreen();
+    }
     
     game.restartGame();
+    updateScreen();
     return { updateScreen }
 })();
-
-screenController.updateScreen();

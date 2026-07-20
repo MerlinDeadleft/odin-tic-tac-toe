@@ -27,3 +27,12 @@
     font-size: 3rem;
     margin: 1.5rem 0;
 }
+
+#restart-button {
+    display: block;
+    margin: 1rem auto;
+}
+
+.hidden {
+    display: none;
+}
