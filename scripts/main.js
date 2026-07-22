@@ -89,6 +89,7 @@ function createGameController() {
     const restartGame = () => {
         gameBoard.resetBoard();
         gameState = GameState.Playing;
+        currentPlayer = playerOne;
     }
 
     const playTurn = (x, y) => {
@@ -224,7 +225,7 @@ const screenController = (() => {
     playerOneNameInput.addEventListener("keyup", (keyupEvent) => handlePlayerNameInputConfirm(keyupEvent, 0, changePlayerOneButton, playerOneNameInput, confirmPlayerOneButton));
 
     changePlayerTwoButton.addEventListener("click", () => toggleChangePlayerNameEditState(1, true, changePlayerTwoButton, playerTwoNameInput, confirmPlayerTwoButton));
-    confirmPlayerTwoButton.addEventListener("click", () => toggleChangePlayerNameEditState(0, false, changePlayerTwoButton, playerTwoNameInput, confirmPlayerTwoButton));
+    confirmPlayerTwoButton.addEventListener("click", () => toggleChangePlayerNameEditState(1, false, changePlayerTwoButton, playerTwoNameInput, confirmPlayerTwoButton));
     playerTwoNameInput.addEventListener("keyup", (keyupEvent) => handlePlayerNameInputConfirm(keyupEvent, 1, changePlayerTwoButton, playerTwoNameInput, confirmPlayerTwoButton));
     
     const updateScreen = () => {
