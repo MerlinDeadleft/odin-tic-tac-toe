@@ -203,6 +203,7 @@ const screenController = (() => {
         gameBoardDiv.textContent = "";
         
         const grid = game.getGrid();
+        const gameState = game.getGameState();
         
         for(let y = 0; y < 3; y++) {
             for(let x = 0; x < 3; x++) {
@@ -214,12 +215,12 @@ const screenController = (() => {
                 cellButton.textContent = grid[y][x] === GameBoardCellStatus.Empty ? "" : grid[y][x];
                 if(gridValue !== GameBoardCellStatus.Empty) {
                     cellButton.dataset.token = gridValue;
+                } else if(gameState !== GameState.Playing) {
+                    cellButton.dataset.token = "";
                 }
                 gameBoardDiv.appendChild(cellButton);
             }
         }
-
-        const gameState = game.getGameState();
 
         switch(gameState) {
             case GameState.Playing:
