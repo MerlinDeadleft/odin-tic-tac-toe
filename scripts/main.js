@@ -210,7 +210,11 @@ const screenController = (() => {
                 cellButton.classList.add("cell");
                 cellButton.dataset.x = x;
                 cellButton.dataset.y = y;
+                const gridValue = grid[y][x];
                 cellButton.textContent = grid[y][x] === GameBoardCellStatus.Empty ? "" : grid[y][x];
+                if(gridValue !== GameBoardCellStatus.Empty) {
+                    cellButton.dataset.token = gridValue;
+                }
                 gameBoardDiv.appendChild(cellButton);
             }
         }
