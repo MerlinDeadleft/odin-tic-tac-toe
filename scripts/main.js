@@ -54,18 +54,26 @@ function createGameController() {
         return { setCell, getGrid, resetBoard };
     })();
 
-    const playerOne = createPlayer("PlayerOne", GameBoardCellStatus.PlayerOne);
-    const playerTwo = createPlayer("PlayerTwo", GameBoardCellStatus.PlayerTwo);
+    const playerOne = createPlayer("Player One", GameBoardCellStatus.PlayerOne);
+    const playerTwo = createPlayer("Player Two", GameBoardCellStatus.PlayerTwo);
     let currentPlayer = playerOne;
     let gameState = GameState.Playing;
 
-    const updatePlayerName = (playerNumber, newName) => {
-        if(playerNumber === 1) {
+    const updatePlayerName = (playerIndex, newName) => {
+        if(playerIndex === 0) {
             playerOne.setName(newName);
         } else {
             playerTwo.setName(newName);
         }
     };
+
+    const getPlayerName = (playerIndex) => {
+        if(playerIndex === 0) {
+            return playerOne.getName();
+        }
+        
+        return playerTwo.getName();
+    }
 
     const switchCurrentPlayer = () => {
         if(currentPlayer === playerOne) {
@@ -162,7 +170,7 @@ function createGameController() {
     const getGrid = () => gameBoard.getGrid();
     const getGameState = () => gameState;
 
-    return { updatePlayerName, getCurrentPlayerName, restartGame, playTurn, getGrid, getGameState };
+    return { updatePlayerName, getPlayerName, getCurrentPlayerName, restartGame, playTurn, getGrid, getGameState };
 }
 
 const screenController = (() => {
@@ -172,8 +180,24 @@ const screenController = (() => {
     const restartButtonContainer = document.querySelector("#restart-button-container");
     const restartButton = document.querySelector("#restart-button");
     
+    const changePlayerOneButton = document.querySelector("#change-player-one-name-button");
+    const playerOneNameInput = document.querySelector("#player-one-name");
+    const confirmPlayerOneButton = document.querySelector("#confirm-player-one");
+    
+    const changePlayerTwoButton = document.querySelector("#change-player-two-name-button");
+    const playerTwoNameInput = document.querySelector("#player-two-name");
+    const confirmPlayerTwoButton = document.querySelector("#confirm-player-two");
+    
     gameBoardDiv.addEventListener("click", onGameBoardButtonClicked);
     restartButton.addEventListener("click", onRestartButtonClicked);
+
+    changePlayerOneButton.addEventListener("click", () => toggleChangePlayerNameEditState(0, true, changePlayerOneButton, playerOneNameInput, confirmPlayerOneButton));
+    confirmPlayerOneButton.addEventListener("click", () => toggleChangePlayerNameEditState(0, false, changePlayerOneButton, playerOneNameInput, confirmPlayerOneButton));
+    playerOneNameInput.addEventListener("keyup", (keyupEvent) => handlePlayerNameInputConfirm(keyupEvent, 0, changePlayerOneButton, playerOneNameInput, confirmPlayerOneButton));
+
+    changePlayerTwoButton.addEventListener("click", () => toggleChangePlayerNameEditState(1, true, changePlayerTwoButton, playerTwoNameInput, confirmPlayerTwoButton));
+    confirmPlayerTwoButton.addEventListener("click", () => toggleChangePlayerNameEditState(0, false, changePlayerTwoButton, playerTwoNameInput, confirmPlayerTwoButton));
+    playerTwoNameInput.addEventListener("keyup", (keyupEvent) => handlePlayerNameInputConfirm(keyupEvent, 1, changePlayerTwoButton, playerTwoNameInput, confirmPlayerTwoButton));
     
     const updateScreen = () => {
         gameBoardDiv.textContent = "";
@@ -229,11 +253,33 @@ const screenController = (() => {
     }
 
     function onRestartButtonClicked() {
+        playerOneNameInput.value = game.getPlayerName(0);
+        playerTwoNameInput.value = game.getPlayerName(1);
         game.restartGame();
         updateScreen();
     }
+
+    function toggleChangePlayerNameEditState(playerIndex, enableEdit, changeNameButton, nameInput, confirmButton) {
+        if(enableEdit) {
+            changeNameButton.setAttribute("disabled", "");
+            nameInput.removeAttribute("disabled");
+            confirmButton.removeAttribute("disabled");
+        } else {
+            changeNameButton.removeAttribute("disabled");
+            nameInput.setAttribute("disabled", "");
+            confirmButton.setAttribute("disabled", "");
+
+            game.updatePlayerName(playerIndex, nameInput.value);
+            updateScreen();
+        }
+    }
+
+    function handlePlayerNameInputConfirm(keyupEvent, playerIndex, changeNameButton, nameInput, confirmButton) {
+        if(keyupEvent.key === "Enter") {
+            toggleChangePlayerNameEditState(playerIndex, false, changeNameButton, nameInput, confirmButton);
+        }
+    }
     
-    game.restartGame();
-    updateScreen();
+    onRestartButtonClicked();
     return { updateScreen }
 })();

@@ -19,20 +19,53 @@
     grid-template: repeat(3, 1fr) / repeat(3, 1fr);
     gap: 2.5%;
     padding: 10px;
-    margin: 0 auto;
 }
 
 #turn-indicator {
     text-align: center;
     font-size: 3rem;
-    margin: 1.5rem 0;
-}
-
-#restart-button {
-    display: block;
-    margin: 1rem auto;
 }
 
 .hidden {
     display: none;
+}
+
+.centered {
+    text-align: center;
+    margin: 1.5rem auto;
+}
+
+.player-name-container {
+    display: inline-block;
+    margin: 5px 0;
+}
+
+input {
+    font-size: 1.5rem;
+}
+
+input[disabled] {
+    border: none;
+    background-color: transparent;
+    color: black;
+}
+
+.icon {
+    height: 2rem;
+    position: relative;
+    top: 7px;
+    fill: gray;
+}
+
+.icon:hover {
+    fill: black;
+    cursor: pointer;
+}
+
+.icon[disabled] {
+    display: none;
+}
+
+.right-align {
+    text-align: right;
 }
