@@ -27,12 +27,19 @@
     font-weight: bold;
 }
 
-.cell[data-token="X"] {
+.cell[data-token^="X"] {
+    content: "X";
     color: rgb(190, 0, 0);
 }
 
-.cell[data-token="O"] {
+.cell[data-token^="O"] {
+    content: "O";
     color: rgb(0, 170, 0);
+}
+
+.cell[data-token*="W"] {
+    background-color: gray;
+    color: white;
 }
 
 .cell:hover:not([data-token]) {

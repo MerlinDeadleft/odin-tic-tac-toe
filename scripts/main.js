@@ -1,7 +1,8 @@
 const GameBoardCellStatus = {
     Empty: "E",
     PlayerOne: "X",
-    PlayerTwo: "O"
+    PlayerTwo: "O",
+    Winning: "W"
 }
 
 const GameState = {
@@ -131,25 +132,52 @@ function createGameController() {
         return false;
 
         function checkRowForWin(rowIndex) {
-            return checkCellsForWin(grid[rowIndex]);
+            if(checkCellsForWin(grid[rowIndex])) {
+                for(let i = 0; i < grid[rowIndex].length; i++) {
+                    grid[rowIndex][i] += GameBoardCellStatus.Winning;
+                }
+
+                return true;
+            }
+            
+            return false;
         }
 
         function checkColumnForWin(columnIndex) {
             const column = [ grid[0][columnIndex], grid[1][columnIndex], grid[2][columnIndex] ];
-            return checkCellsForWin(column);
+            if(checkCellsForWin(column)) {
+                grid[0][columnIndex] += GameBoardCellStatus.Winning;
+                grid[1][columnIndex] += GameBoardCellStatus.Winning;
+                grid[2][columnIndex] += GameBoardCellStatus.Winning;
+
+                return true;
+            }
+
+            return false;
         }
 
         function checkDiagonalsForWin() {
             const topLeftBotRight = [ grid[0][0], grid[1][1], grid[2][2] ];
             if(checkCellsForWin(topLeftBotRight)) {
+                grid[0][0] += GameBoardCellStatus.Winning;
+                grid[1][1] += GameBoardCellStatus.Winning;
+                grid[2][2] += GameBoardCellStatus.Winning;
                 return true;
             }
             const botLeftTopRight = [ grid[0][2], grid[1][1], grid[2][0] ];
-            return checkCellsForWin(botLeftTopRight);
+            if(checkCellsForWin(botLeftTopRight)) {
+                grid[0][2] += GameBoardCellStatus.Winning;
+                grid[1][1] += GameBoardCellStatus.Winning;
+                grid[2][0] += GameBoardCellStatus.Winning;
+
+                return true;
+            }
+
+            return false;
         }
 
         function checkCellsForWin(cells) {
-            return cells.every(value => value !== GameBoardCellStatus.Empty && value === cells[0]);
+            return cells.every(value => value !== GameBoardCellStatus.Empty && value === cells[0])
         }
     }
 
@@ -211,8 +239,10 @@ const screenController = (() => {
                 cellButton.classList.add("cell");
                 cellButton.dataset.x = x;
                 cellButton.dataset.y = y;
+                
                 const gridValue = grid[y][x];
-                cellButton.textContent = grid[y][x] === GameBoardCellStatus.Empty ? "" : grid[y][x];
+                cellButton.textContent = grid[y][x] === GameBoardCellStatus.Empty ? "" : gridValue[0];
+
                 if(gridValue !== GameBoardCellStatus.Empty) {
                     cellButton.dataset.token = gridValue;
                 } else if(gameState !== GameState.Playing) {
